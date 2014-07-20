@@ -1,0 +1,107 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,dfn,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}
+
+html, body {
+  font-size: 18px;
+  font-family: 'Raleway', sans-serif;
+  background: #fff url(img/bg.jpg) center top no-repeat;
+  color: #333;
+}
+p {
+  margin: 1em 0;
+}
+strong {
+  color: #444;
+}
+h1:first-child, h2:first-child {
+  margin-top: 0;
+}
+h1 {
+  font-size: 3em;
+  margin: 60px 0;
+}
+h2 {
+  font-size: 2em;
+  margin: 40px 0;
+  padding-bottom: 5px;
+  border-bottom: 4px solid #e7e7e7;
+}
+h3 {
+  font-size: 1.5em;
+  margin: 30px 0;
+  padding-bottom: 4px;
+  border-bottom: 2px solid #e7e7e7;
+}
+h4 {
+  margin: 20px 0;
+  font-size: 1.25em;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e7e7e7;
+}
+h1:first-child, h2:first-child, h4:first-child, h4:first-child {
+  margin-top: 0;
+}
+ol {
+  margin: 1em 0;
+  padding-left: 40px;
+}
+ol li {
+  list-style-type: decimal;
+}
+code {
+  border: 2px solid #e7e7e7;
+}
+p code, li code {
+  border: 0;
+}
+a, a:visited {
+  color: #4bb183;
+}
+a:hover {
+  color: #27a2c4;
+}
+button {
+  width: 278px;
+  background: #4bb183;
+  outline: none;
+  border: none;
+  font-family: 'Raleway', sans-serif;
+  font-size: 18px;
+  padding: 20px 0;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover {
+  background: #3f926d;
+}
+button strong {
+  color: #fff;
+}
+#wrapper {
+  max-width: 940px;
+  margin: 0 auto;
+}
+header {
+  background: url(img/icon_20108.svg) no-repeat center 40px;
+  background-size: 220px auto;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 80px;
+  padding-top: 240px;
+  min-height: 190px;
+}
+header h1 {
+  font-weight: 300;
+  margin: 0;
+  padding-bottom: 10px;
+}
+main {
+  max-width: 940px;
+  margin: 0 auto;
+}
+.lead {
+  font-size: 1.5em;
+}
+#download {
+  margin: 40px 0;
+  text-align: center;
+}

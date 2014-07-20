@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset=utf8>
+<title>Handpipe.js - Generator based handlebars style streaming templates</title>
+<link href="style.css" rel=stylesheet>
+<link href="http://fonts.googleapis.com/css?family=Raleway:400,100,300,500,600,700,800" rel=stylesheet>
+<link href="lib/highlight/styles/github.css" rel=stylesheet>
+</head>
+<body>
+<div id=wrapper>
+  <header>
+    <h1>Handpipe.js</h1>
+    <p>Generator based handlebars style streaming templates.</p>
+  </header>
+  <main>
+    <p class=lead>Handpipe.js is a new &amp; different take on handlebars templates. It uses <strong>ES6 generators</strong> to retrieve data asynchronously &amp; <strong>Node's stream</strong> abstraction to compile &amp; process templates memory &amp; time efficiently.</p>
+
+    <form id="download" action="">
+      <button type="submit">Download <strong>v0.9.0</strong></button>
+      <br>
+      <small><a href="#">Download ES4 compatible version</a></small>
+    </form>
+
+    <h2 id=getting-started>Getting started</h2>
+
+    <h3 id=example-1>Example 1</h3>
+
+    <p>Given a template in the DOM:</p>
+
+    <pre><code class=handlebars>
+&lt;!doctype html&gt;
+&lt;div id="output"&gt;&lt;/div&gt;
+&lt;script id="template" type="text/x-handpipe-template"&gt;
+  &lt;div&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;p&gt;{{desc}}&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/script&gt;
+    </code></pre>
+
+    <p>Read, process and pipe to DOM element with ID "output":</p>
+
+    <pre><code class=javascript>
+  var domstream = require("domnode-dom")
+    , hp = require("handpipe")
+    , template = document.getElementById("template")
+    , output = document.getElementById("output")
+
+  var compiler = hp({
+    title: function (next, cb) {
+      // Some async operation to get data for "title"
+      setTimeout(function () { cb(null, "foobar") }, 1000)
+    },
+    desc: "Lorem ipsum dolor sit"
+  })
+
+  domstream.createReadStream(template)
+    .pipe(compiler)
+    .pipe(domstream.createWriteStream(output, "text/html"))
+    </code></pre>
+
+    <p><a href="http://browserify.org/">Browserify</a> this file to use in the browser.</p>
+
+    <h3 id=example-2>Example 2</h3>
+
+    <p>Given template.html:</p>
+
+    <pre><code class=handlebars>
+  &lt;!doctype html&gt;
+  &lt;div&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;p&gt;{{desc}}&lt;/p&gt;
+  &lt;/div&gt;
+    </code></pre>
+
+    <p>Read, process and pipe to output.html:</p>
+
+    <pre><code class=javascript>
+  var fs = require("fs")
+    , hp = require("handpipe")
+
+  var compiler = hp({
+    title: function (next, cb) {
+      // Some async operation to get data for "title"
+      setTimeout(function () { cb(null, "foobar") }, 1000)
+    },
+    desc: "Lorem ipsum dolor sit"
+  })
+
+  fs.createReadStream("template.html")
+    .pipe(compiler)
+    .pipe(fs.createWriteStream("output.html"))
+    </code></pre>
+
+    <p>To use this file:</p>
+
+    <ol>
+      <li>Install node &gt;= 0.11
+      <li>Start node using <code>--harmony</code> flag.
+    </ol>
+
+    <h2 id=api>API</h2>
+
+    <h3 id=handpipe>handpipe([ data ])</h3>
+
+    <p>Create a transform stream to compile a template and apply a data context to it. Pipe Handlebars in, and HTML/Markdown/whatever out. Shortcut for <code>handpipe.compile().pipe(handpipe.apply([ data ]))</code></p>
+
+    <h4 id=handpipe-data>data</h4>
+
+    <p>The <code>data</code> object gets values for the template. Properties that require async processing are functions with the signature <code>function (next, cb) {}</code>.</p>
+
+    <p><code>next</code> is an object that has a <code>key</code> property. This is the name of the variable / function your code should invoke to retrieve the value. In loops, the next object will also contain an <code>index</code> and an <code>iterable</code> property.</p>
+
+    <p>Invoke <code>cb</code> when the value has been retrieved. Pass the value as the second argument (error as the first if one occurred).</p>
+
+    <h3 id=handpipe-compile>handpipe.compile()</h3>
+
+    <p>Create a new handpipe compiler. The compiler is a transform stream you can pipe templates into and compiled template JS out from.</p>
+
+    <h3 id=handpipe-apply>handpipe.apply([ data ])</h3>
+
+    <p>Applies the <a href="#handpipe-data"><code>data</code></a> to the compiled template. Returns a transform stream that you can pipe compiled template JS into and HTML/Markdown/whatever out from. </p>
+
+    <h2 id=template-syntax>Template syntax</h2>
+
+    <p>Template syntax is a subset of handlebars.</p>
+
+    <h3 id=variable-output>Variable output</h3>
+
+    <p>Output variables using double curly braces:</p>
+
+    <pre><code class=handlebars>  {{varname}}</code></pre>
+
+    <p>handpipe supports simple paths so you can output content below the current context:</p>
+
+    <pre><code class=handlebars>  {{foo.bar}} or {{foo/bar}}</code></pre>
+
+    <p>Nested paths can also include <code>../</code> segments, which evaluate their paths against a parent context.</p>
+
+    <pre><code class=handlebars>
+  &lt;h1&gt;Comments&lt;/h1&gt;
+
+  &lt;div id="comments"&gt;
+   {{#each comments}}
+   &lt;h2&gt;&lt;a href="/posts/{{../permalink}}#{{id}}">{{title}}&lt;/a&gt;&lt;/h2&gt;
+   &lt;div&gt;{{body}}&lt;/div&gt;
+   {{/each}}
+  &lt;/div&gt;
+    </code></pre>
+
+    <h3 id=loops>Loops</h3>
+    <p>Use the <code>each</code> block helper to iterate over arrays:</p>
+
+    <pre><code class=handlebars>
+  &lt;ul&gt;
+    {{#each sprockets}}
+    &lt;li&gt;{{name}} ({{teeth}})&lt;/li&gt;
+    {{/each}}
+  &lt;/ul&gt;
+    </code></pre>
+
+    <p>You might populate this template with the following JS:</p>
+
+    <pre><code class=javascript>
+  hp({
+    sprockets: function (next, cb) {
+      db.sprockets.find({}).toArray(cb)
+    }
+  })
+    </code></pre>
+
+    <p>If sprocket objects <strong>do not</strong> have "name" and/or "teeth" properties then the <code>data</code> object passed to handpipe will be queried so that a value can be provided. <code>next.key</code> will be "name" or "teeth" (depending on which property is currently being evaluated), <code>next.context</code> will be the current sprocket object.</p>
+
+    <h3 id=conditionals>Conditionals</h3>
+
+    <p>Use the <code>if</code> block helper to create conditionally rendered template blocks:</p>
+
+    <pre><code class=handlebars>
+  {{#if title}}
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+  {{/if}}
+    </code></pre>
+
+    <p>With optional alternative:</p>
+
+    <pre><code class=handlebars>
+  {{#if title}}
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+  {{else}}
+    &lt;h1&gt;Unnamed&lt;/h1&gt;
+  {{/if}}
+    </code></pre>
+
+    <h3 id=html-escaping>HTML escaping</h3>
+
+    <p>handpipe HTML-escapes values returned by a <code>{{expression}}</code>. If you don't want handpipe to escape a value, use the "triple-stash", <code>{{{</code>.</p>
+
+    <pre><code class=handlebars>
+  &lt;div class="entry"&gt;
+     &lt;h1&gt;{{title}}&lt;/h1&gt;
+     &lt;div class="body"&gt;
+       {{{body}}}
+     &lt;/div&gt;
+  &lt;/div&gt;
+    </code></pre>
+
+    <h3 id=comments>Comments</h3>
+
+    <p>Use <code>{{! comment }}</code> or <code>{{!-- comment --}}</code> to create comments that don't appear in output HTML. Any comments that must contain <code>{{</code> or <code>}}</code> should use the <code>{{!-- --}}</code> syntax.</p>
+
+    <h3 id=context-re-binding>Context re-binding</h3>
+
+    <p>Use the <code>with</code> block helper to alter the context for a template block:</p>
+
+    <pre><code class=handlebars>
+  &lt;div class="entry"&gt;
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+
+    {{#with author}}
+    &lt;h2&gt;By {{firstName}} {{lastName}}&lt;/h2&gt;
+    {{/with}}
+  &lt;/div&gt;
+    </code></pre>
+  </main>
+</div><!--/#wrapper-->
+<script src="lib/highlight/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
