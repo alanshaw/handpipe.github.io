@@ -29,20 +29,22 @@
     <p>Given a template in the DOM:</p>
 
     <pre><code class=handlebars>
-&lt;!doctype html&gt;
-&lt;div id="output"&gt;&lt;/div&gt;
-&lt;script id="template" type="text/x-handpipe-template"&gt;
-  &lt;div&gt;
-    &lt;h1&gt;{{title}}&lt;/h1&gt;
-    &lt;p&gt;{{desc}}&lt;/p&gt;
-  &lt;/div&gt;
-&lt;/script&gt;
+  &lt;!doctype html&gt;
+  &lt;div id="output"&gt;&lt;/div&gt;
+  &lt;script id="template" type="text/x-handpipe-template"&gt;
+    &lt;div&gt;
+      &lt;h1&gt;{{title}}&lt;/h1&gt;
+      &lt;p&gt;{{desc}}&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/script&gt;
+  &lt;script src="bundle.js"&gt;&lt;/script&gt;
     </code></pre>
 
     <p>Read, process and pipe to DOM element with ID "output":</p>
 
     <pre><code class=javascript>
-  var domstream = require("domnode-dom")
+  // main.js
+  var innerhtml = require("innerhtml")
     , hp = require("handpipe")
     , template = document.getElementById("template")
     , output = document.getElementById("output")
@@ -55,12 +57,18 @@
     desc: "Lorem ipsum dolor sit"
   })
 
-  domstream.createReadStream(template)
+  innerhtml.createReadStream(template)
     .pipe(compiler)
-    .pipe(domstream.createWriteStream(output, "text/html"))
+    .pipe(innerhtml.createWriteStream(output))
     </code></pre>
 
-    <p><a href="http://browserify.org/">Browserify</a> this file to use in the browser.</p>
+    <p><a href="http://browserify.org/">Browserify</a> this file to use in the browser:</p>
+
+    <pre><code>
+      npm install -g browserify
+      npm install innerhtml handpipe
+      browserify main.js > bundle.js
+    </code></pre>
 
     <h3 id=example-2>Example 2</h3>
 
