@@ -76,6 +76,9 @@ button:hover {
 button strong {
   color: #fff;
 }
+small {
+  font-size: 0.75em;
+}
 #wrapper {
   max-width: 940px;
   margin: 0 auto;
@@ -95,8 +98,9 @@ header h1 {
   padding-bottom: 10px;
 }
 main {
-  max-width: 940px;
+  max-width: 970px;
   margin: 0 auto;
+  padding: 0 15px;
 }
 .lead {
   font-size: 1.5em;
@@ -104,4 +108,24 @@ main {
 #download {
   margin: 40px 0;
   text-align: center;
+}
+footer {
+  max-width: 970px;
+  margin: 60px auto;
+  padding: 0 15px;
+}
+footer > div {
+  border-top: 4px solid #e7e7e7;
+  padding: 20px 0;
+}
+footer small {
+  float: right;
+  line-height: 32px;
+}
+#github img {
+  opacity: 0.5;
+  transition: opacity 0.5s ease-out;
+}
+#github img:hover {
+  opacity: 1;
 }
